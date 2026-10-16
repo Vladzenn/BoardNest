@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" th:content="${_csrf.token}" />
+    <meta name="csrf-header" th:content="${_csrf.headerName}" />
+
+    <title th:text="${property.name + ' | BoardNest'}">
+      Property editor | BoardNest
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script th:src="@{/js/app.js}" defer></script>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="brand" th:href="@{/properties}">
+        <span class="brand-mark">⌂</span>
+        <span>
+          <b>BoardNest</b>
+          <small>Boarding House Management</small>
+        </span>
+      </a>
+
+      <div class="top-actions">
+        <a class="btn ghost" th:href="@{/properties}">← All properties</a>
+
+        <span class="user-pill">
+          <span class="avatar">⌁</span>
+          <span>
+            <b th:text="${username}">Owner</b>
+            <small>Property owner</small>
+          </span>
+        </span>
+
+        <form th:action="@{/logout}" method="post">
+          <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <section class="editor-main">
+        <div class="page-heading editor-heading">
+          <div>
+            <p class="eyebrow">PROPERTY EDITOR</p>
+            <h1 th:text="${property.name}">Sunrise Boarding House</h1>
+            <p
+              class="muted"
+              th:text="${property.address != null ? property.address : 'Add an address later in your property details.'}"
+            >
+              Address
+            </p>
+          </div>
+
+          <span class="status-chip">
+            <span class="status-dot"></span>
+            Workspace
+          </span>
+        </div>
+
+        <div class="notice success" th:if="${notice}" th:text="${notice}"></div>
+        <div class="notice danger" th:if="${error}" th:text="${error}"></div>
+
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-icon">▦</span>
+            <small>Floors</small>
+            <strong th:text="${property.floors.size()}">0</strong>
+          </div>
+
+          <div class="metric">
+            <span class="metric-icon">▤</span>
+            <small>Rooms</small>
+            <strong th:text="${property.roomCount}">0</strong>
+          </div>
+
+          <div class="metric">
+            <span class="metric-icon">♙</span>
+            <small>Residents</small>
+            <strong th:text="${property.occupied}">0</strong>
+          </div>
+
+          <div class="metric">
+            <span class="metric-icon">＋</span>
+            <small>Available spaces</small>
+            <strong th:text="${property.capacity - property.occupied}"
+              >0</strong
+            >
+          </div>
+        </div>
+
+        <section class="section-panel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">LAYOUT</p>
+              <h2>Floors &amp; rooms</h2>
+              <p class="muted">
+                Drag an unassigned tenant onto a room, or use the assignment
+                form.
+              </p>
+            </div>
+
+            <form
+              th:action="@{/properties/{id}/floors(id=${property.id})}"
+              method="post"
+              class="inline-form"
+            >
+              <label class="sr-only" for="floorNumber">Floor number</label>
+              <input
+                id="floorNumber"
+                type="number"
+                name="floorNumber"
+                min="0"
+                max="99"
+                placeholder="Floor #"
+                required
+              />
+              <button class="btn primary" type="submit">＋ Add floor</button>
+            </form>
+          </div>
+
+          <div th:if="${property.floors.isEmpty()}" class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>Your first floor starts here</h3>
+            <p>
+              Add a floor, then create its rooms and set each room's capacity.
+            </p>
+          </div>
+
+          <div class="floor-list">
+            <section class="floor-block" th:each="floor : ${property.floors}">
+              <div class="floor-heading">
+                <div>
+                  <span class="floor-symbol">▦</span>
+                  <h3 th:text="|Floor ${floor.number}|">Floor</h3>
+                  <span class="muted" th:text="|${floor.rooms.size()} rooms|"
+                    >0 rooms</span
+                  >
+                </div>
+
+                <form
+                  th:action="@{/properties/{id}/rooms(id=${property.id})}"
+                  method="post"
+                  class="inline-form"
+                >
+                  <input type="hidden" name="floorId" th:value="${floor.id}" />
+
+                  <input
+                    name="roomNumber"
+                    maxlength="30"
+                    placeholder="Room name/#"
+                    required
+                  />
+
+                  <input
+                    type="number"
+                    name="capacity"
+                    min="1"
+                    max="30"
+                    value="2"
+                    aria-label="Room capacity"
+                    required
+                  />
+
+                  <button class="btn secondary" type="submit">
+                    ＋ Add room
+                  </button>
+                </form>
+              </div>
+
+              <div th:if="${floor.rooms.isEmpty()}" class="floor-empty">
+                No rooms on this floor yet.
+              </div>
+
+              <div class="room-grid">
+                <article
+                  class="room-card"
+                  th:each="room : ${floor.rooms}"
+                  th:classappend="${room.occupied == room.capacity ? ' full' : (room.occupied > 0 ? ' partial' : ' available')}"
+                  th:attr="data-room-id=${room.id},data-capacity=${room.capacity}"
+                >
+                  <div class="room-top">
+                    <span class="room-icon">⌂</span>
+                    <span
+                      class="room-status"
+                      th:text="${room.occupied == room.capacity ? 'Full' : (room.occupied > 0 ? 'Partially occupied' : 'Available')}"
+                    >
+                      Available
+                    </span>
+                  </div>
+
+                  <h3 th:text="|Room ${room.number}|">Room</h3>
+
+                  <div class="room-count">
+                    <b th:text="${room.occupied}">0</b>
+                    <span>/</span>
+                    <span th:text="${room.capacity}">2</span>
+                    <small>occupants</small>
+                  </div>
+
+                  <div class="room-tenants">
+                    <span
+                      class="tenant-chip"
+                      th:each="t : ${room.tenants}"
+                      th:text="${t.name}"
+                      th:title="${t.name}"
+                    >
+                      Tenant
+                    </span>
+
+                    <span
+                      class="drop-hint"
+                      th:if="${room.occupied < room.capacity}"
+                    >
+                      Drop tenant here
+                    </span>
+                  </div>
+
+                  <form
+                    class="drop-assignment-form"
+                    th:action="@{/properties/{id}/assignments(id=${property.id})}"
+                    method="post"
+                  >
+                    <input type="hidden" name="tenantId" value="" />
+                    <input type="hidden" name="roomId" th:value="${room.id}" />
+                    <input
+                      type="hidden"
+                      th:name="${_csrf.parameterName}"
+                      th:value="${_csrf.token}"
+                    />
+                  </form>
+
+                  <div class="room-footer">
+                    <span
+                      th:text="|${room.capacity - room.occupied} available|"
+                    >
+                      Available
+                    </span>
+                    <span>↘</span>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="section-panel tenant-panel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">PEOPLE</p>
+              <h2>Tenant management</h2>
+              <p class="muted">
+                Tenants belong to this property and can be moved without
+                creating a duplicate record.
+              </p>
+            </div>
+
+            <span
+              class="count-pill"
+              th:text="|${property.tenants.size()} tenants|"
+            >
+              0 tenants
+            </span>
+          </div>
+
+          <div class="tenant-workspace">
+            <div class="tenant-list">
+              <div
+                class="tenant-row"
+                th:each="tenant : ${property.tenants}"
+                draggable="true"
+                th:attr="data-tenant-id=${tenant.id},data-tenant-name=${tenant.name}"
+              >
+                <span
+                  class="avatar tenant-avatar"
+                  th:text="${#strings.substring(tenant.name,0,1).toUpperCase()}"
+                >
+                  T
+                </span>
+
+                <div class="tenant-info">
+                  <b th:text="${tenant.name}">Tenant name</b>
+
+                  <small
+                    th:text="${tenant.phone != null ? tenant.phone : (tenant.email != null ? tenant.email : 'Contact details not provided')}"
+                  >
+                    Contact
+                  </small>
+
+                  <span
+                    class="tenant-assignment"
+                    th:text="${tenant.roomId != null ? 'Room ' + tenant.roomNumber : 'Unassigned'}"
+                  >
+                    Unassigned
+                  </span>
+                </div>
+
+                <span class="drag-grip" title="Drag tenant to a room">⠿</span>
+
+                <form
+                  th:if="${tenant.roomId != null}"
+                  th:action="@{/properties/{id}/assignments(id=${property.id})}"
+                  method="post"
+                >
+                  <input
+                    type="hidden"
+                    name="tenantId"
+                    th:value="${tenant.id}"
+                  />
+                  <input type="hidden" name="roomId" value="" />
+                  <button
+                    class="text-button"
+                    type="submit"
+                    title="Unassign tenant"
+                  >
+                    Unassign
+                  </button>
+                </form>
+              </div>
+
+              <div th:if="${property.tenants.isEmpty()}" class="empty-inline">
+                No tenants yet. Add your first tenant.
+              </div>
+            </div>
+
+            <form
+              class="tenant-create"
+              th:action="@{/properties/{id}/tenants(id=${property.id})}"
+              method="post"
+            >
+              <h3>Add a tenant</h3>
+
+              <label>
+                Full name
+                <input
+                  name="fullName"
+                  maxlength="120"
+                  placeholder="Tenant's full name"
+                  required
+                />
+              </label>
+
+              <label>
+                Phone <span class="label-hint">Optional</span>
+                <input
+                  name="phone"
+                  maxlength="30"
+                  placeholder="Contact number"
+                />
+              </label>
+
+              <label>
+                Email <span class="label-hint">Optional</span>
+                <input
+                  name="email"
+                  type="email"
+                  maxlength="120"
+                  placeholder="name@example.com"
+                />
+              </label>
+
+              <button class="btn primary wide" type="submit">
+                ＋ Add tenant
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <p class="footer-note">
+          Room capacity and property ownership are checked on the server for
+          every assignment.
+        </p>
+      </section>
+
+      <aside class="editor-aside">
+        <section class="aside-card">
+          <p class="eyebrow">PROPERTY OVERVIEW</p>
+          <h2 th:text="${property.name}">Property name</h2>
+
+          <p
+            class="muted"
+            th:text="${property.address != null ? property.address : 'No address added'}"
+          >
+            Address
+          </p>
+
+          <div class="aside-stat">
+            <span>Total capacity</span>
+            <b th:text="${property.capacity}">0</b>
+          </div>
+
+          <div class="aside-stat">
+            <span>Current occupancy</span>
+            <b th:text="${property.occupied}">0</b>
+          </div>
+
+          <div class="occupancy-track large">
+            <span
+              th:style="|width:${property.capacity == 0 ? 0 : (100.0 * property.occupied / property.capacity)}%|"
+            ></span>
+          </div>
+
+          <p
+            class="muted tiny"
+            th:text="${property.capacity == 0 ? 'Add rooms to start tracking occupancy.' : #numbers.formatDecimal(100.0 * property.occupied / property.capacity,1,0) + '% of capacity in use'}"
+          >
+            0% in use
+          </p>
+        </section>
+
+        <section class="aside-card tip-card">
+          <span class="tip-icon">✦</span>
+          <h3>A little room to grow</h3>
+          <p>
+            Keep each room's capacity accurate. BoardNest prevents assignments
+            that would overfill a room.
+          </p>
+        </section>
+
+        <section class="aside-card">
+          <h3>Quick guide</h3>
+          <ol class="guide-list">
+            <li>Add a floor.</li>
+            <li>Add rooms and set capacity.</li>
+            <li>Add tenants to your property.</li>
+            <li>
+              Drag a tenant onto an available room, or use the tenant's
+              assignment controls.
+            </li>
+          </ol>
+        </section>
+      </aside>
+    </main>
+  </body>
+</html>

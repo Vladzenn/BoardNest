@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your properties | BoardNest</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" th:href="@{/properties}"
+        ><span class="brand-mark">⌂</span
+        ><span
+          ><b>BoardNest</b><small>Boarding House Management</small></span
+        ></a
+      >
+      <div class="top-actions">
+        <span class="user-pill"
+          ><span class="avatar">⌁</span
+          ><span
+            ><b th:text="${username}">Owner</b
+            ><small>Property owner</small></span
+          ></span
+        >
+        <form th:action="@{/logout}" method="post">
+          <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+      </div>
+    </header>
+    <main class="page-wrap">
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h1>Your properties</h1>
+          <p class="muted">
+            Choose a boarding house to open its floors, rooms, and tenant list.
+          </p>
+        </div>
+      </section>
+      <div class="notice success" th:if="${notice}" th:text="${notice}"></div>
+      <div class="notice danger" th:if="${error}" th:text="${error}"></div>
+      <section class="property-grid">
+        <a
+          class="property-card"
+          th:each="p : ${properties}"
+          th:href="@{/properties/{id}(id=${p.id})}"
+          ><div class="property-icon">⌂</div>
+          <div class="property-card-main">
+            <h2 th:text="${p.name}">Sunrise Boarding House</h2>
+            <p
+              class="muted"
+              th:text="${p.address != null ? p.address : 'No address added'}"
+            >
+              Address
+            </p>
+            <div class="stat-row">
+              <span><b th:text="${p.floors}">0</b><small>Floors</small></span
+              ><span><b th:text="${p.rooms}">0</b><small>Rooms</small></span
+              ><span
+                ><b th:text="${p.residents}">0</b><small>Residents</small></span
+              >
+            </div>
+            <div class="occupancy-track">
+              <span
+                th:style="|width:${p.capacity == 0 ? 0 : (100.0 * p.residents / p.capacity)}%|"
+              ></span>
+            </div>
+            <small
+              class="muted"
+              th:text="|${p.capacity == 0 ? 0 : p.capacity - p.residents} spaces available|"
+            ></small>
+          </div>
+          <span class="card-arrow">↗</span></a
+        >
+        <section class="property-card create-card">
+          <div class="property-icon pale">＋</div>
+          <h2>Add a property</h2>
+          <p class="muted">Start a new boarding-house workspace.</p>
+          <form th:action="@{/properties}" method="post" class="stack">
+            <label
+              >Property name<input
+                name="name"
+                maxlength="120"
+                placeholder="e.g. Sunrise Boarding House"
+                required /></label
+            ><label
+              >Address <span class="label-hint">Optional</span
+              ><input
+                name="address"
+                maxlength="255"
+                placeholder="Street, city" /></label
+            ><button class="btn primary" type="submit">
+              Create property <span>→</span>
+            </button>
+          </form>
+        </section>
+      </section>
+      <p class="footer-note">
+        Each property is private to the account that owns it.
+      </p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Something went wrong | BoardNest</title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+  </head>
+
+  <body class="auth-page">
+    <main class="auth-shell">
+      <a class="brand" th:href="@{/properties}">
+        <span class="brand-mark">⌂</span>
+
+        <span>
+          <b>BoardNest</b>
+          <small>Boarding House Management</small>
+        </span>
+      </a>
+
+      <section class="auth-card">
+        <p class="eyebrow">LET'S TRY THAT AGAIN</p>
+
+        <h1>That didn't work.</h1>
+
+        <p
+          class="muted"
+          th:text="${message != null ? message : 'The requested page could not be loaded.'}"
+        >
+          Error message
+        </p>
+
+        <a class="btn primary wide" th:href="@{/properties}">
+          Back to properties →
+        </a>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Create account | BoardNest</title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+  </head>
+
+  <body class="auth-page">
+    <main class="auth-shell">
+      <a class="brand" th:href="@{/login}">
+        <span class="brand-mark">⌂</span>
+
+        <span>
+          <b>BoardNest</b>
+          <small>Boarding House Management</small>
+        </span>
+      </a>
+
+      <section class="auth-card">
+        <p class="eyebrow">GET STARTED</p>
+
+        <h1>Make room for better management.</h1>
+
+        <p class="muted">Create your private owner account.</p>
+
+        <div class="notice danger" th:if="${error}" th:text="${error}"></div>
+
+        <form th:action="@{/register}" method="post" class="stack">
+          <label>
+            Full name
+            <input
+              name="fullName"
+              th:value="${fullName}"
+              maxlength="100"
+              autocomplete="name"
+              required
+            />
+          </label>
+
+          <label>
+            Username
+            <input
+              name="username"
+              th:value="${username}"
+              maxlength="50"
+              autocomplete="username"
+              required
+            />
+          </label>
+
+          <label>
+            Password
+            <span class="label-hint">8+ characters</span>
+            <input
+              type="password"
+              name="password"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </label>
+
+          <label>
+            Confirm password
+            <input
+              type="password"
+              name="confirmPassword"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </label>
+
+          <button class="btn primary wide" type="submit">
+            Create account <span>→</span>
+          </button>
+        </form>
+
+        <p class="auth-foot">
+          Already have an account?
+          <a th:href="@{/login}">Sign in</a>
+        </p>
+      </section>
+
+      <p class="tiny-note">Your data is separated by owner account.</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sign in | BoardNest</title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+  </head>
+
+  <body class="auth-page">
+    <main class="auth-shell">
+      <a class="brand" th:href="@{/login}">
+        <span class="brand-mark">⌂</span>
+
+        <span>
+          <b>BoardNest</b>
+          <small>Boarding House Management</small>
+        </span>
+      </a>
+
+      <section class="auth-card">
+        <p class="eyebrow">WELCOME BACK</p>
+
+        <h1>Your properties, in one place.</h1>
+
+        <p class="muted">Sign in to manage your rooms and tenants.</p>
+
+        <div class="notice success" th:if="${notice}" th:text="${notice}"></div>
+
+        <div class="notice danger" th:if="${param.error}">
+          The username or password was incorrect.
+        </div>
+
+        <div class="notice" th:if="${param.logout}">You have signed out.</div>
+
+        <form th:action="@{/login}" method="post" class="stack">
+          <label>
+            Username
+            <input name="username" autocomplete="username" required autofocus />
+          </label>
+
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+
+          <button class="btn primary wide" type="submit">
+            Sign in <span>→</span>
+          </button>
+        </form>
+
+        <p class="auth-foot">
+          New to BoardNest?
+          <a th:href="@{/register}">Create an account</a>
+        </p>
+      </section>
+
+      <p class="tiny-note">A calmer way to keep every room in order.</p>
+    </main>
+  </body>
+</html>
