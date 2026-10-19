@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS tenants (
   full_name VARCHAR(120) NOT NULL,
   phone VARCHAR(30) NULL,
   email VARCHAR(120) NULL,
+  monthly_rent DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   property_id BIGINT NOT NULL,
   PRIMARY KEY (id),
   KEY idx_tenants_property (property_id),

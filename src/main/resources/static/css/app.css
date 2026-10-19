@@ -934,3 +934,24 @@ input:focus {
     padding: 8px 10px;
   }
 }
+
+
+/* Tenant management actions and accessible native modal dialogs. */
+.tenant-actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.tenant-rent { color: var(--green-dark); font-size: 11px; font-weight: 700; }
+.danger-text { color: var(--red); }
+.app-dialog { width: min(92vw, 460px); max-height: 90vh; padding: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(23,43,43,.24); }
+.app-dialog::backdrop { background: rgba(20, 37, 34, .48); backdrop-filter: blur(3px); }
+.dialog-form { display: flex; flex-direction: column; gap: 14px; padding: 25px; }
+.dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.dialog-heading h2 { margin-bottom: 0; }
+.dialog-close { border: 0; background: #f1f3ec; color: var(--ink); border-radius: 50%; width: 34px; height: 34px; font-size: 23px; line-height: 1; }
+.dialog-form label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; }
+.dialog-form input { width: 100%; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 7px; }
+.delete-dialog { width: min(92vw, 420px); }
+.delete-dialog p { color: var(--muted); margin-bottom: 3px; }
+.delete-symbol { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: var(--red-soft); color: var(--red); font-size: 24px; font-weight: 800; }
+.delete-button { border: 1px solid var(--red); border-radius: 12px; padding: 10px 15px; background: var(--red); color: white; font-weight: 700; }
+.delete-button:hover { background: #963c39; }
+@media (max-width: 560px) { .tenant-row { flex-wrap: wrap; } .tenant-actions { width: 100%; justify-content: flex-end; } .dialog-form { padding: 20px; } }

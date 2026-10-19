@@ -13,6 +13,41 @@
         tenant.classList.remove("dragging"),
       );
     });
+  const editDialog = document.getElementById("edit-tenant-dialog");
+  const deleteDialog = document.getElementById("delete-tenant-dialog");
+  const propertyId = document.querySelector(".tenant-panel")?.dataset.propertyId;
+
+  document.querySelectorAll(".tenant-edit-trigger").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.tenantId;
+      document.getElementById("edit-tenant-form").action = `/properties/${propertyId}/tenants/${id}/edit`;
+      document.getElementById("edit-tenant-name").value = button.dataset.tenantName || "";
+      document.getElementById("edit-tenant-phone").value = button.dataset.tenantPhone || "";
+      document.getElementById("edit-tenant-email").value = button.dataset.tenantEmail || "";
+      document.getElementById("edit-tenant-rent").value = button.dataset.tenantRent || "0.00";
+      editDialog.showModal();
+    });
+  });
+
+  document.querySelectorAll(".tenant-delete-trigger").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.tenantId;
+      document.getElementById("delete-tenant-form").action = `/properties/${propertyId}/tenants/${id}/delete`;
+      document.getElementById("delete-tenant-name").textContent = button.dataset.tenantName || "this tenant";
+      deleteDialog.showModal();
+    });
+  });
+
+  document.querySelectorAll("[data-close-dialog]").forEach((button) => {
+    button.addEventListener("click", () => button.closest("dialog")?.close());
+  });
+
+  [editDialog, deleteDialog].forEach((dialog) => {
+    dialog?.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+
   document.querySelectorAll(".room-card").forEach((room) => {
     room.addEventListener("dragover", (event) => {
       event.preventDefault();

@@ -2,6 +2,7 @@ package com.boardinghouse.service;
 
 import com.boardinghouse.model.*;
 import com.boardinghouse.repository.*;
+import java.math.BigDecimal;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class PropertyService {
     }
 
     public record PropertySummary(Long id, String name, String address, int floors, int rooms, long residents, int capacity) {}
-    public record TenantCard(Long id, String name, String phone, String email, Long roomId, String roomNumber) {}
+    public record TenantCard(Long id, String name, String phone, String email, BigDecimal monthlyRent, Long roomId, String roomNumber) {}
     public record RoomCard(Long id, String number, int capacity, long occupied, List<TenantCard> tenants) {}
     public record FloorCard(Long id, int number, List<RoomCard> rooms) {}
     public record PropertyDetail(Long id, String name, String address, List<FloorCard> floors, List<TenantCard> tenants,
@@ -66,9 +67,44 @@ public class PropertyService {
 
     @Transactional
     public void addTenant(String username, Long propertyId, String name, String phone, String email) {
+        addTenant(username, propertyId, name, phone, email, BigDecimal.ZERO);
+    }
+
+    @Transactional
+    public void addTenant(String username, Long propertyId, String name, String phone, String email, BigDecimal monthlyRent) {
         Property property = ownedProperty(username, propertyId);
+        validateTenantDetails(name, monthlyRent);
+        tenants.save(new Tenant(name.trim(), blankToNull(phone), blankToNull(email), monthlyRent, property));
+    }
+
+    @Transactional
+    public void updateTenant(String username, Long propertyId, Long tenantId, String name,
+            String phone, String email, BigDecimal monthlyRent) {
+        ownedProperty(username, propertyId);
+        Tenant tenant = tenants.findByIdAndProperty_Id(tenantId, propertyId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant does not belong to this property."));
+        validateTenantDetails(name, monthlyRent);
+        tenant.setFullName(name.trim());
+        tenant.setPhone(blankToNull(phone));
+        tenant.setEmail(blankToNull(email));
+        tenant.setMonthlyRent(monthlyRent);
+    }
+
+    @Transactional
+    public void deleteTenant(String username, Long propertyId, Long tenantId) {
+        ownedProperty(username, propertyId);
+        Tenant tenant = tenants.findByIdAndProperty_Id(tenantId, propertyId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant does not belong to this property."));
+        occupancies.findByTenant_Id(tenantId).ifPresent(occupancies::delete);
+        tenants.delete(tenant);
+    }
+
+    private void validateTenantDetails(String name, BigDecimal monthlyRent) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Enter the tenant's name.");
-        tenants.save(new Tenant(name.trim(), blankToNull(phone), blankToNull(email), property));
+        if (name.trim().length() > 120) throw new IllegalArgumentException("Tenant name must be 120 characters or fewer.");
+        if (monthlyRent == null || monthlyRent.signum() < 0 || monthlyRent.scale() > 2 || monthlyRent.precision() - monthlyRent.scale() > 8) {
+            throw new IllegalArgumentException("Monthly rent must be a non-negative amount with up to 2 decimal places.");
+        }
     }
 
     @Transactional
@@ -101,7 +137,7 @@ public class PropertyService {
         for (Tenant t : allTenants) occupancies.findByTenant_Id(t.getId()).ifPresent(o -> byTenant.put(t.getId(), o));
         List<TenantCard> tenantCards = allTenants.stream().map(t -> {
             Occupancy o = byTenant.get(t.getId());
-            return new TenantCard(t.getId(), t.getFullName(), t.getPhone(), t.getEmail(),
+            return new TenantCard(t.getId(), t.getFullName(), t.getPhone(), t.getEmail(), t.getMonthlyRent(),
                     o == null ? null : o.getRoom().getId(), o == null ? null : o.getRoom().getRoomNumber());
         }).toList();
         List<FloorCard> floorCards = floors.findAllByProperty_IdOrderByFloorNumberDesc(propertyId).stream().map(f -> {

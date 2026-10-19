@@ -247,7 +247,7 @@
           </div>
         </section>
 
-        <section class="section-panel tenant-panel">
+        <section class="section-panel tenant-panel" th:attr="data-property-id=${property.id}">
           <div class="section-title">
             <div>
               <p class="eyebrow">PEOPLE</p>
@@ -290,15 +290,17 @@
                     Contact
                   </small>
 
-                  <span
-                    class="tenant-assignment"
-                    th:text="${tenant.roomId != null ? 'Room ' + tenant.roomNumber : 'Unassigned'}"
-                  >
-                    Unassigned
-                  </span>
+                  <span class="tenant-assignment" th:text="${tenant.roomId != null ? 'Room ' + tenant.roomNumber : 'Unassigned'}">Unassigned</span>
+                  <span class="tenant-rent" th:text="|Monthly rent: ₱${#numbers.formatDecimal(tenant.monthlyRent,1,'COMMA',2,'POINT')}|">Monthly rent: ₱0.00</span>
                 </div>
 
-                <span class="drag-grip" title="Drag tenant to a room">⠿</span>
+                <div class="tenant-actions">
+                  <button class="text-button tenant-edit-trigger" type="button"
+                    th:attr="data-tenant-id=${tenant.id},data-tenant-name=${tenant.name},data-tenant-phone=${tenant.phone},data-tenant-email=${tenant.email},data-tenant-rent=${tenant.monthlyRent}">Edit</button>
+                  <button class="text-button danger-text tenant-delete-trigger" type="button"
+                    th:attr="data-tenant-id=${tenant.id},data-tenant-name=${tenant.name}">Delete</button>
+                  <span class="drag-grip" title="Drag tenant to a room">⠿</span>
+                </div>
 
                 <form
                   th:if="${tenant.roomId != null}"
@@ -354,12 +356,12 @@
 
               <label>
                 Email <span class="label-hint">Optional</span>
-                <input
-                  name="email"
-                  type="email"
-                  maxlength="120"
-                  placeholder="name@example.com"
-                />
+                <input name="email" type="email" maxlength="120" placeholder="name@example.com" />
+              </label>
+
+              <label>
+                Monthly rent (₱)
+                <input name="monthlyRent" type="number" min="0" max="99999999.99" step="0.01" value="0.00" required />
               </label>
 
               <button class="btn primary wide" type="submit">
@@ -434,5 +436,30 @@
         </section>
       </aside>
     </main>
+
+    <dialog class="app-dialog" id="edit-tenant-dialog" aria-labelledby="edit-tenant-title">
+      <form id="edit-tenant-form" method="post" class="dialog-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="dialog-heading">
+          <div><p class="eyebrow">TENANT DETAILS</p><h2 id="edit-tenant-title">Edit tenant</h2></div>
+          <button class="dialog-close" type="button" data-close-dialog aria-label="Close">×</button>
+        </div>
+        <label>Full name<input id="edit-tenant-name" name="fullName" maxlength="120" required /></label>
+        <label>Phone <span class="label-hint">Optional</span><input id="edit-tenant-phone" name="phone" maxlength="30" /></label>
+        <label>Email <span class="label-hint">Optional</span><input id="edit-tenant-email" name="email" type="email" maxlength="120" /></label>
+        <label>Monthly rent (₱)<input id="edit-tenant-rent" name="monthlyRent" type="number" min="0" max="99999999.99" step="0.01" required /></label>
+        <div class="dialog-actions"><button class="btn ghost" type="button" data-close-dialog>Cancel</button><button class="btn primary" type="submit">Save changes</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog delete-dialog" id="delete-tenant-dialog" aria-labelledby="delete-tenant-title">
+      <form id="delete-tenant-form" method="post" class="dialog-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="delete-symbol">!</div>
+        <h2 id="delete-tenant-title">Delete tenant?</h2>
+        <p>You're about to delete <strong id="delete-tenant-name">this tenant</strong>. Their room assignment will also be removed. This action cannot be undone.</p>
+        <div class="dialog-actions"><button class="btn ghost" type="button" data-close-dialog>Cancel</button><button class="btn delete-button" type="submit">Delete tenant</button></div>
+      </form>
+    </dialog>
   </body>
 </html>

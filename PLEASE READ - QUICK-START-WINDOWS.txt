@@ -1,0 +1,19 @@
+BOARDNEST QUICK START (WINDOWS)
+
+1. Install JDK 21 and MySQL (Laragon is supported). The launcher cannot install these prerequisites.
+2. Extract this complete bundle into a folder. If replacing an existing project, back it up and preserve your .git folder and any uncommitted work.
+3. Double-click Setup-BoardNest.bat to review prerequisite checks.
+4. Double-click Start-BoardNest.bat. It checks Java/project files, attempts to start MySQL/Laragon, and searches for mysql.exe.
+5. Enter the application database username (default boarding_house_app) and choose its password. On first run, if the account/database is missing or the credentials are rejected, the launcher asks for a MySQL administrator username (default root) and password. It creates boarding_house_db and the application account, grants access, creates/checks the six required tables, and adds monthly_rent only if missing.
+6. The launcher starts Spring Boot and opens http://localhost:8080 when the application responds. Maven dependencies are downloaded on first run, so internet is needed.
+
+Important: the first-time database setup requires a MySQL administrator account with permission to create databases/users and grant privileges. Existing tables are not dropped. Passwords are not saved in project files. If mysql.exe cannot be found or automatic service startup fails, follow the message shown by the launcher and start/configure MySQL manually.
+
+Manual PowerShell startup (optional):
+  $env:DB_URL = "jdbc:mysql://localhost:3306/boarding_house_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+  $env:DB_USERNAME = "boarding_house_app"
+  $env:DB_PASSWORD = "YOUR_LOCAL_APP_PASSWORD"
+  .\mvnw.cmd clean test
+  .\mvnw.cmd spring-boot:run
+
+Visit http://localhost:8080 and register a NEW application account. This is not the MySQL login. If a test fails, copy the first [ERROR] section without sharing any passwords.

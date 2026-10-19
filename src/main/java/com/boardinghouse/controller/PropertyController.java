@@ -4,6 +4,7 @@ import com.boardinghouse.service.PropertyService;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,9 +60,33 @@ public class PropertyController {
     @PostMapping("/properties/{propertyId}/tenants")
     public String addTenant(@PathVariable Long propertyId, @RequestParam @NotBlank @Size(max=120) String fullName,
             @RequestParam(required=false) @Size(max=30) String phone, @RequestParam(required=false) @Size(max=120) String email,
+            @RequestParam(defaultValue="0.00") BigDecimal monthlyRent,
             Authentication auth, RedirectAttributes redirect) {
-        try { properties.addTenant(auth.getName(), propertyId, fullName, phone, email); redirect.addFlashAttribute("notice", "Tenant added."); }
+        try { properties.addTenant(auth.getName(), propertyId, fullName, phone, email, monthlyRent); redirect.addFlashAttribute("notice", "Tenant added."); }
         catch (IllegalArgumentException ex) { redirect.addFlashAttribute("error", ex.getMessage()); }
+        return "redirect:/properties/" + propertyId;
+    }
+
+    @PostMapping("/properties/{propertyId}/tenants/{tenantId}/edit")
+    public String editTenant(@PathVariable Long propertyId, @PathVariable Long tenantId,
+            @RequestParam @NotBlank @Size(max=120) String fullName,
+            @RequestParam(required=false) @Size(max=30) String phone,
+            @RequestParam(required=false) @Size(max=120) String email,
+            @RequestParam BigDecimal monthlyRent, Authentication auth, RedirectAttributes redirect) {
+        try {
+            properties.updateTenant(auth.getName(), propertyId, tenantId, fullName, phone, email, monthlyRent);
+            redirect.addFlashAttribute("notice", "Tenant details updated.");
+        } catch (IllegalArgumentException ex) { redirect.addFlashAttribute("error", ex.getMessage()); }
+        return "redirect:/properties/" + propertyId;
+    }
+
+    @PostMapping("/properties/{propertyId}/tenants/{tenantId}/delete")
+    public String deleteTenant(@PathVariable Long propertyId, @PathVariable Long tenantId,
+            Authentication auth, RedirectAttributes redirect) {
+        try {
+            properties.deleteTenant(auth.getName(), propertyId, tenantId);
+            redirect.addFlashAttribute("notice", "Tenant deleted.");
+        } catch (IllegalArgumentException ex) { redirect.addFlashAttribute("error", ex.getMessage()); }
         return "redirect:/properties/" + propertyId;
     }
 
