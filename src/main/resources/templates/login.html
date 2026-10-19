@@ -3,66 +3,73 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <meta name="theme-color" content="#204d36" />
     <title>Sign in | BoardNest</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" th:href="@{/css/app.css}" />
   </head>
+  <body class="auth-page auth-login-page">
+    <main class="auth-shell auth-shell-wide">
+      <section class="auth-card auth-card-split" aria-label="BoardNest sign in">
+        <aside class="auth-brand-panel">
+          <a class="auth-brand" th:href="@{/login}" aria-label="BoardNest home">
+            <span class="auth-brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <path d="M8 29 31 9l22 20v25H37V38H25v16H8Z" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round" />
+                <path d="M39 35c-1 11-9 17-19 18 1-10 7-18 19-18Z" fill="#9bd36b" />
+                <path d="m25 48 10-10" fill="none" stroke="#214b35" stroke-width="2.2" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="auth-brand-name">Board<span>Nest</span></span>
+          </a>
+          <p class="auth-brand-kicker">BOARDING HOUSE MANAGEMENT</p>
+          <span class="auth-brand-rule" aria-hidden="true"></span>
+          <h1>Good spaces.<br />Better managed.</h1>
+          <p class="auth-brand-copy">A calmer way to care for your rooms, tenants, and everyday operations.</p>
+          <div class="auth-brand-caption"><span class="auth-status-dot"></span> Your property workspace, all in one place</div>
+        </aside>
 
-  <body class="auth-page">
-    <main class="auth-shell">
-      <a class="brand" th:href="@{/login}">
-        <span class="brand-mark">⌂</span>
+        <section class="auth-form-panel">
+          <div class="auth-form-heading">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h2>Welcome back.</h2>
+            <p class="muted">Sign in to continue to BoardNest.</p>
+          </div>
 
-        <span>
-          <b>BoardNest</b>
-          <small>Boarding House Management</small>
-        </span>
-      </a>
+          <div class="notice success" th:if="${notice}" th:text="${notice}" role="status"></div>
+          <div class="notice danger" th:if="${param.error}" role="alert">The username or password was incorrect. Please try again.</div>
+          <div class="notice" th:if="${param.logout}" role="status">You have signed out successfully.</div>
 
-      <section class="auth-card">
-        <p class="eyebrow">WELCOME BACK</p>
+          <form th:action="@{/login}" method="post" class="stack auth-form">
+            <label class="auth-field">
+              <span>Username</span>
+              <span class="auth-input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-3.6 2.8-5.5 7-5.5s6.5 1.9 7 5.5"/></svg>
+                <input name="username" placeholder="Enter your username" autocomplete="username" required autofocus />
+              </span>
+            </label>
+            <label class="auth-field">
+              <span>Password</span>
+              <span class="auth-input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                <input id="login-password" type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+                <button class="password-toggle" type="button" data-password-toggle="login-password" aria-label="Show password" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.2-6 9.5-6 9.5 6 9.5 6-3.2 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+                </button>
+              </span>
+            </label>
+            <div class="auth-helper-row"><span>Keep your account secure.</span></div>
+            <button class="btn primary wide auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+          </form>
 
-        <h1>Your properties, in one place.</h1>
-
-        <p class="muted">Sign in to manage your rooms and tenants.</p>
-
-        <div class="notice success" th:if="${notice}" th:text="${notice}"></div>
-
-        <div class="notice danger" th:if="${param.error}">
-          The username or password was incorrect.
-        </div>
-
-        <div class="notice" th:if="${param.logout}">You have signed out.</div>
-
-        <form th:action="@{/login}" method="post" class="stack">
-          <label>
-            Username
-            <input name="username" autocomplete="username" required autofocus />
-          </label>
-
-          <label>
-            Password
-            <input
-              type="password"
-              name="password"
-              autocomplete="current-password"
-              required
-            />
-          </label>
-
-          <button class="btn primary wide" type="submit">
-            Sign in <span>→</span>
-          </button>
-        </form>
-
-        <p class="auth-foot">
-          New to BoardNest?
-          <a th:href="@{/register}">Create an account</a>
-        </p>
+          <div class="auth-divider"><span>YOUR PROPERTY, IN GOOD HANDS</span></div>
+          <p class="auth-foot">New to BoardNest? <a th:href="@{/register}">Create an account <span aria-hidden="true">→</span></a></p>
+          <p class="auth-privacy">Private workspace for property owners</p>
+        </section>
       </section>
-
-      <p class="tiny-note">A calmer way to keep every room in order.</p>
+      <p class="auth-page-footer">© 2026 BoardNest <span aria-hidden="true">·</span> Make room for better management.</p>
     </main>
+    <script th:src="@{/js/app.js}" defer></script>
   </body>
 </html>

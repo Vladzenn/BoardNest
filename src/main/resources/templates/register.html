@@ -3,90 +3,50 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <meta name="theme-color" content="#204d36" />
     <title>Create account | BoardNest</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" th:href="@{/css/app.css}" />
   </head>
+  <body class="auth-page auth-register-page">
+    <main class="auth-shell auth-shell-wide">
+      <section class="auth-card auth-card-split auth-card-register" aria-label="Create a BoardNest account">
+        <aside class="auth-brand-panel">
+          <a class="auth-brand" th:href="@{/login}" aria-label="BoardNest home">
+            <span class="auth-brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation"><path d="M8 29 31 9l22 20v25H37V38H25v16H8Z" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round"/><path d="M39 35c-1 11-9 17-19 18 1-10 7-18 19-18Z" fill="#9bd36b"/><path d="m25 48 10-10" fill="none" stroke="#214b35" stroke-width="2.2" stroke-linecap="round"/></svg>
+            </span>
+            <span class="auth-brand-name">Board<span>Nest</span></span>
+          </a>
+          <p class="auth-brand-kicker">BOARDING HOUSE MANAGEMENT</p>
+          <span class="auth-brand-rule" aria-hidden="true"></span>
+          <h1>Make room for<br />better management.</h1>
+          <p class="auth-brand-copy">Bring your properties, rooms, and tenant details together in one simple workspace.</p>
+          <div class="auth-brand-caption"><span class="auth-status-dot"></span> A better start for your property</div>
+        </aside>
 
-  <body class="auth-page">
-    <main class="auth-shell">
-      <a class="brand" th:href="@{/login}">
-        <span class="brand-mark">⌂</span>
-
-        <span>
-          <b>BoardNest</b>
-          <small>Boarding House Management</small>
-        </span>
-      </a>
-
-      <section class="auth-card">
-        <p class="eyebrow">GET STARTED</p>
-
-        <h1>Make room for better management.</h1>
-
-        <p class="muted">Create your private owner account.</p>
-
-        <div class="notice danger" th:if="${error}" th:text="${error}"></div>
-
-        <form th:action="@{/register}" method="post" class="stack">
-          <label>
-            Full name
-            <input
-              name="fullName"
-              th:value="${fullName}"
-              maxlength="100"
-              autocomplete="name"
-              required
-            />
-          </label>
-
-          <label>
-            Username
-            <input
-              name="username"
-              th:value="${username}"
-              maxlength="50"
-              autocomplete="username"
-              required
-            />
-          </label>
-
-          <label>
-            Password
-            <span class="label-hint">8+ characters</span>
-            <input
-              type="password"
-              name="password"
-              minlength="8"
-              autocomplete="new-password"
-              required
-            />
-          </label>
-
-          <label>
-            Confirm password
-            <input
-              type="password"
-              name="confirmPassword"
-              minlength="8"
-              autocomplete="new-password"
-              required
-            />
-          </label>
-
-          <button class="btn primary wide" type="submit">
-            Create account <span>→</span>
-          </button>
-        </form>
-
-        <p class="auth-foot">
-          Already have an account?
-          <a th:href="@{/login}">Sign in</a>
-        </p>
+        <section class="auth-form-panel">
+          <div class="auth-form-heading">
+            <p class="eyebrow">GET STARTED</p>
+            <h2>Create your account.</h2>
+            <p class="muted">Set up your private owner workspace.</p>
+          </div>
+          <div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+          <form th:action="@{/register}" method="post" class="stack auth-form auth-register-form">
+            <label class="auth-field"><span>Full name</span><span class="auth-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-3.6 2.8-5.5 7-5.5s6.5 1.9 7 5.5"/></svg><input name="fullName" th:value="${fullName}" placeholder="Your full name" maxlength="100" autocomplete="name" required /></span></label>
+            <label class="auth-field"><span>Username</span><span class="auth-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-3.6 2.8-5.5 7-5.5s6.5 1.9 7 5.5"/></svg><input name="username" th:value="${username}" placeholder="Choose a username" maxlength="50" autocomplete="username" required /></span></label>
+            <label class="auth-field"><span>Password <small>8+ characters</small></span><span class="auth-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="register-password" type="password" name="password" placeholder="Create a password" minlength="8" autocomplete="new-password" required /><button class="password-toggle" type="button" data-password-toggle="register-password" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.2-6 9.5-6 9.5 6 9.5 6-3.2 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></span></label>
+            <label class="auth-field"><span>Confirm password</span><span class="auth-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="register-confirm-password" type="password" name="confirmPassword" placeholder="Enter your password again" minlength="8" autocomplete="new-password" required /></span></label>
+            <button class="btn primary wide auth-submit" type="submit">Create account <span aria-hidden="true">→</span></button>
+          </form>
+          <div class="auth-divider"><span>YOUR PROPERTY, IN GOOD HANDS</span></div>
+          <p class="auth-foot">Already have an account? <a th:href="@{/login}">Sign in <span aria-hidden="true">→</span></a></p>
+          <p class="auth-privacy">Your data is separated by owner account</p>
+        </section>
       </section>
-
-      <p class="tiny-note">Your data is separated by owner account.</p>
+      <p class="auth-page-footer">© 2026 BoardNest <span aria-hidden="true">·</span> Make room for better management.</p>
     </main>
+    <script th:src="@{/js/app.js}" defer></script>
   </body>
 </html>

@@ -3,101 +3,149 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f0" />
     <title>Your properties | BoardNest</title>
     <link rel="stylesheet" th:href="@{/css/app.css}" />
   </head>
-  <body>
-    <header class="topbar">
-      <a class="brand" th:href="@{/properties}"
-        ><span class="brand-mark">⌂</span
-        ><span
-          ><b>BoardNest</b><small>Boarding House Management</small></span
-        ></a
-      >
+  <body class="dashboard-page">
+    <header class="topbar dashboard-topbar">
+      <a class="brand" th:href="@{/properties}" aria-label="BoardNest home">
+        <span class="brand-mark" aria-hidden="true">⌂</span>
+        <span>
+          <b>BoardNest</b>
+          <small>Boarding House Management</small>
+        </span>
+      </a>
       <div class="top-actions">
-        <span class="user-pill"
-          ><span class="avatar">⌁</span
-          ><span
-            ><b th:text="${username}">Owner</b
-            ><small>Property owner</small></span
-          ></span
-        >
+        <span class="user-pill">
+          <span class="avatar" aria-hidden="true" th:text="${#strings.substring(username, 0, 1).toUpperCase()}">O</span>
+          <span>
+            <b th:text="${username}">Owner</b>
+            <small>Property owner</small>
+          </span>
+        </span>
         <form th:action="@{/logout}" method="post">
           <button class="btn ghost" type="submit">Sign out</button>
         </form>
       </div>
     </header>
-    <main class="page-wrap">
-      <section class="page-heading">
-        <div>
-          <p class="eyebrow">YOUR WORKSPACE</p>
-          <h1>Your properties</h1>
-          <p class="muted">
-            Choose a boarding house to open its floors, rooms, and tenant list.
+
+    <main class="page-wrap dashboard-wrap">
+      <section class="workspace-hero" aria-labelledby="workspace-title">
+        <div class="workspace-hero-copy">
+          <p class="hero-eyebrow"><span></span> YOUR PROPERTY WORKSPACE</p>
+          <h1 id="workspace-title">Your spaces.<br />Better managed.</h1>
+          <p class="workspace-hero-description">
+            One calmer place to look after your floors, rooms, and residents.
           </p>
+          <div class="hero-property-count">
+            <span class="hero-count-icon" aria-hidden="true">⌂</span>
+            <span>
+              <strong th:text="${properties.size()}">0</strong>
+              <small th:text="${properties.size() == 1 ? 'property in your workspace' : 'properties in your workspace'}">properties in your workspace</small>
+            </span>
+          </div>
+        </div>
+        <div class="workspace-hero-visual" role="img" aria-label="A peaceful, leafy boarding-house courtyard">
+          <div class="hero-image-note">
+            <span class="hero-image-note-icon" aria-hidden="true">✳</span>
+            <span>
+              <strong>Room to breathe.</strong>
+              <small>Clarity for the everyday details.</small>
+            </span>
+          </div>
         </div>
       </section>
-      <div class="notice success" th:if="${notice}" th:text="${notice}"></div>
-      <div class="notice danger" th:if="${error}" th:text="${error}"></div>
-      <section class="property-grid">
-        <a
-          class="property-card"
-          th:each="p : ${properties}"
-          th:href="@{/properties/{id}(id=${p.id})}"
-          ><div class="property-icon">⌂</div>
-          <div class="property-card-main">
-            <h2 th:text="${p.name}">Sunrise Boarding House</h2>
-            <p
-              class="muted"
-              th:text="${p.address != null ? p.address : 'No address added'}"
-            >
-              Address
-            </p>
-            <div class="stat-row">
-              <span><b th:text="${p.floors}">0</b><small>Floors</small></span
-              ><span><b th:text="${p.rooms}">0</b><small>Rooms</small></span
-              ><span
-                ><b th:text="${p.residents}">0</b><small>Residents</small></span
-              >
-            </div>
-            <div class="occupancy-track">
-              <span
-                th:style="|width:${p.capacity == 0 ? 0 : (100.0 * p.residents / p.capacity)}%|"
-              ></span>
-            </div>
-            <small
-              class="muted"
-              th:text="|${p.capacity == 0 ? 0 : p.capacity - p.residents} spaces available|"
-            ></small>
+
+      <div class="notice success" th:if="${notice}" th:text="${notice}" role="status"></div>
+      <div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+
+      <section class="property-section" aria-labelledby="properties-title">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">YOUR PORTFOLIO</p>
+            <h2 id="properties-title">Your properties</h2>
+            <p class="muted">Choose a boarding house to manage its floors, rooms, and tenant list.</p>
           </div>
-          <span class="card-arrow">↗</span></a
-        >
-        <section class="property-card create-card">
-          <div class="property-icon pale">＋</div>
-          <h2>Add a property</h2>
-          <p class="muted">Start a new boarding-house workspace.</p>
-          <form th:action="@{/properties}" method="post" class="stack">
-            <label
-              >Property name<input
-                name="name"
-                maxlength="120"
-                placeholder="e.g. Sunrise Boarding House"
-                required /></label
-            ><label
-              >Address <span class="label-hint">Optional</span
-              ><input
-                name="address"
-                maxlength="255"
-                placeholder="Street, city" /></label
-            ><button class="btn primary" type="submit">
-              Create property <span>→</span>
-            </button>
-          </form>
-        </section>
+          <span class="portfolio-count">
+            <span class="portfolio-count-dot" aria-hidden="true"></span>
+            <span th:text="|${properties.size()} ${properties.size() == 1 ? 'property' : 'properties'}|">0 properties</span>
+          </span>
+        </div>
+
+        <div class="property-grid dashboard-property-grid" id="property-list">
+          <a
+            class="property-card dashboard-property-card"
+            th:each="p : ${properties}"
+            th:href="@{/properties/{id}(id=${p.id})}"
+          >
+            <div class="dashboard-property-top">
+              <span class="property-icon" aria-hidden="true">⌂</span>
+              <span class="property-open-link">Open property <span aria-hidden="true">↗</span></span>
+            </div>
+            <div class="property-card-main">
+              <h2 th:text="${p.name}">Sunrise Boarding House</h2>
+              <p class="muted dashboard-property-address" th:text="${p.address != null and !p.address.isBlank() ? p.address : 'No address added yet'}">Street address</p>
+              <div class="stat-row dashboard-stat-row">
+                <span>
+                  <b th:text="${p.floors}">0</b>
+                  <small>Floors</small>
+                </span>
+                <span>
+                  <b th:text="${p.rooms}">0</b>
+                  <small>Rooms</small>
+                </span>
+                <span>
+                  <b th:text="${p.residents}">0</b>
+                  <small>Residents</small>
+                </span>
+              </div>
+              <div class="occupancy-summary">
+                <div class="occupancy-label-row">
+                  <span>Room occupancy</span>
+                  <strong th:text="${p.capacity == 0 ? '0%' : #numbers.formatDecimal(100.0 * p.residents / p.capacity, 1, 0) + '%'}">0%</strong>
+                </div>
+                <div class="occupancy-track" role="progressbar" aria-label="Room occupancy" aria-valuemin="0" aria-valuemax="100" th:attr="aria-valuenow=${p.capacity == 0 ? 0 : (100.0 * p.residents / p.capacity)}">
+                  <span th:style="|width:${p.capacity == 0 ? 0 : (100.0 * p.residents / p.capacity)}%|"></span>
+                </div>
+              </div>
+              <div class="property-card-footer">
+                <span><span class="availability-dot" aria-hidden="true"></span><strong th:text="${p.capacity == 0 ? 0 : p.capacity - p.residents}">0</strong> spaces available</span>
+                <span class="property-card-arrow" aria-hidden="true">→</span>
+              </div>
+            </div>
+          </a>
+
+          <section class="property-card create-card dashboard-create-card" id="add-property" aria-labelledby="add-property-title">
+            <div class="create-card-heading">
+              <span class="property-icon pale" aria-hidden="true">＋</span>
+              <span class="create-card-kicker">GROW YOUR PORTFOLIO</span>
+            </div>
+            <h2 id="add-property-title">Add a property</h2>
+            <p class="muted">Set up another boarding house and keep everything organized in one place.</p>
+            <form th:action="@{/properties}" method="post" class="stack dashboard-create-form">
+              <label>
+                Property name
+                <input name="name" maxlength="120" placeholder="e.g. Sunrise Boarding House" required />
+              </label>
+              <label>
+                Address <span class="label-hint">Optional</span>
+                <input name="address" maxlength="255" placeholder="Street, city" />
+              </label>
+              <button class="btn primary dashboard-create-button" type="submit">
+                Create property <span aria-hidden="true">→</span>
+              </button>
+            </form>
+          </section>
+        </div>
       </section>
-      <p class="footer-note">
-        Each property is private to the account that owns it.
-      </p>
+
+      <footer class="dashboard-footer">
+        <span class="footer-mark" aria-hidden="true">⌂</span>
+        <span>Every property stays private to the account that owns it.</span>
+        <span class="footer-separator" aria-hidden="true">•</span>
+        <span>BoardNest</span>
+      </footer>
     </main>
   </body>
 </html>
